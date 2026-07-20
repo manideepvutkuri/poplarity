@@ -1,0 +1,76 @@
+<div class="page" *ngIf="!loading">
+  <div class="topbar">
+    <div class="brand"><div class="brand-mark">P</div><span>Presence</span></div>
+    <div class="user-info">
+      <span>{{ profile?.name }}</span>
+      <button class="logout-btn" (click)="logout()">Log out</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="header-row">
+      <div>
+        <h1>Welcome back, {{ profile?.name?.split(' ')[0] }}</h1>
+        <p class="subtitle">{{ profile?.role_title }}</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Tasks -->
+      <div>
+        <div class="section-header">
+          <h2>Your Field Log</h2>
+          <div class="filters">
+            <button *ngFor="let f of ['all','today','upcoming','done']"
+                    [class.active]="filter === f"
+                    (click)="filter = f">
+              {{ f }}
+            </button>
+          </div>
+        </div>
+
+        <div class="task-list" *ngIf="filteredTasks.length; else noTasks">
+          <div class="task-row" *ngFor="let t of filteredTasks" [class.done]="t.status === 'done'">
+            <div class="task-info">
+              <div class="task-title">{{ t.title }}</div>
+              <div class="task-meta">{{ t.type }} <span *ngIf="t.location">· {{ t.location }}</span></div>
+            </div>
+            <div class="task-date">
+              <div>{{ t.task_date }}</div>
+              <div class="task-time">{{ t.task_time }}</div>
+            </div>
+            <button *ngIf="t.status !== 'done'" class="done-btn" (click)="markDone(t.id)">Mark done</button>
+            <span *ngIf="t.status === 'done'" class="done-badge">✓ Done</span>
+          </div>
+        </div>
+        <ng-template #noTasks>
+          <div class="empty-state">
+            No tasks yet. Your account manager will add your first tasks here soon.
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- RIGHT: Popularity -->
+      <div>
+        <h2>Your Social Pulse</h2>
+        <div class="social-cards">
+          <div class="social-card">
+            <div class="social-label">YouTube</div>
+            <div class="social-number">{{ latestYoutube?.followers || '—' }}</div>
+            <div class="social-sub" *ngIf="latestYoutube">{{ latestYoutube.views_15d }} views / 15d</div>
+          </div>
+          <div class="social-card">
+            <div class="social-label">Instagram</div>
+            <div class="social-number">{{ latestInstagram?.followers || '—' }}</div>
+            <div class="social-sub" *ngIf="latestInstagram">{{ latestInstagram.likes_15d }} likes / 15d</div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!latestYoutube && !latestInstagram">
+          Your social accounts haven't been connected yet. Numbers will appear here once synced.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-screen" *ngIf="loading">Loading your dashboard...</div>

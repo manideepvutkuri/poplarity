@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F7F4EC;
+  font-family: 'Inter', sans-serif;
+}
+
+.login-card {
+  background: #FFFFFF;
+  border: 1px solid #E4DDC9;
+  border-radius: 14px;
+  padding: 40px 36px;
+  width: 380px;
+  box-shadow: 0 12px 40px rgba(20, 25, 43, 0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #B8863B;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+}
+
+.brand span {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  color: #14192B;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #14192B;
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: #8A8370;
+  margin: 0 0 24px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5C5647;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #D9D2BA;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #B8863B;
+}
+
+.error {
+  color: #B4553F;
+  font-size: 12.5px;
+  margin-bottom: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 11px 0;
+  background: #14192B;
+  color: #F7F4EC;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,123 @@
+<div class="page">
+  <div class="topbar">
+    <div class="brand"><div class="brand-mark">P</div><span>Presence <em>Agency</em></span></div>
+    <button class="logout-btn" (click)="logout()">Log out</button>
+  </div>
+
+  <div class="content">
+    <div class="header-row">
+      <h1>Client Overview</h1>
+      <button class="primary-btn" (click)="openAddClient()">+ Add Client</button>
+    </div>
+
+    <div class="client-table" *ngIf="!loading">
+      <div class="table-header">
+        <div>Client</div><div>Category</div><div>Tasks</div><div></div>
+      </div>
+      <div class="table-row" *ngFor="let c of clients">
+        <div class="client-cell">
+          <div class="avatar">{{ c.name.charAt(0) }}</div>
+          <div>
+            <div class="client-name">{{ c.name }}</div>
+            <div class="client-role">{{ c.role_title }}</div>
+          </div>
+        </div>
+        <div><span class="category-badge">{{ c.category }}</span></div>
+        <div class="task-count">
+          {{ taskCountFor(c.id).pending }} pending · {{ taskCountFor(c.id).total }} total
+        </div>
+        <div class="row-actions">
+          <button class="secondary-btn" (click)="openAddTask(c)">+ Add Task</button>
+        </div>
+      </div>
+      <div class="empty-row" *ngIf="!clients.length">
+        No clients yet. Click "Add Client" to onboard your first one.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" *ngIf="showAddClientModal" (click)="showAddClientModal = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add New Client</h3>
+      <button class="close-btn" (click)="showAddClientModal = false">×</button>
+    </div>
+
+    <ng-container *ngIf="!clientCreateSuccess">
+      <label>Full Name</label>
+      <input [(ngModel)]="newClient.name" placeholder="e.g. Dr. Ananya Sharma" />
+
+      <label>Category</label>
+      <div class="category-picker">
+        <button *ngFor="let cat of ['Politician','Doctor','Business']"
+                [class.active]="newClient.category === cat"
+                (click)="newClient.category = cat">{{ cat }}</button>
+      </div>
+
+      <label>Role / Title</label>
+      <input [(ngModel)]="newClient.role_title" placeholder="e.g. Cardiologist, Apollo Hospital" />
+
+      <label>Phone</label>
+      <input [(ngModel)]="newClient.phone" placeholder="e.g. 9999900000" />
+
+      <label>Login Email</label>
+      <input type="email" [(ngModel)]="newClient.email" placeholder="client@example.com" />
+
+      <label>Temporary Password</label>
+      <input [(ngModel)]="newClient.password" placeholder="Set a password to share with them" />
+
+      <div class="error" *ngIf="clientCreateError">{{ clientCreateError }}</div>
+
+      <div class="modal-actions">
+        <button class="secondary-btn" (click)="showAddClientModal = false">Cancel</button>
+        <button class="primary-btn" [disabled]="savingClient" (click)="submitAddClient()">
+          {{ savingClient ? 'Creating...' : 'Create Client' }}
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="clientCreateSuccess">
+      <div class="success-box">{{ clientCreateSuccess }}</div>
+      <div class="modal-actions">
+        <button class="primary-btn" (click)="showAddClientModal = false">Done</button>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<!-- ADD TASK MODAL -->
+<div class="modal-overlay" *ngIf="showAddTaskModal" (click)="showAddTaskModal = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add Task for {{ selectedClientForTask?.name }}</h3>
+      <button class="close-btn" (click)="showAddTaskModal = false">×</button>
+    </div>
+
+    <label>Task Title</label>
+    <input [(ngModel)]="newTask.title" placeholder="e.g. Visit Anadha Ashramam" />
+
+    <label>Type</label>
+    <select [(ngModel)]="newTask.type">
+      <option>Public Appearance</option>
+      <option>Community Visit</option>
+      <option>CSR</option>
+      <option>Content</option>
+    </select>
+
+    <label>Date</label>
+    <input type="date" [(ngModel)]="newTask.task_date" />
+
+    <label>Time</label>
+    <input type="text" [(ngModel)]="newTask.task_time" placeholder="e.g. 11:00 AM" />
+
+    <label>Location</label>
+    <input [(ngModel)]="newTask.location" placeholder="e.g. Karimnagar" />
+
+    <div class="modal-actions">
+      <button class="secondary-btn" (click)="showAddTaskModal = false">Cancel</button>
+      <button class="primary-btn" (click)="submitAddTask()">Create Task</button>
+    </div>
+  </div>
+</div>

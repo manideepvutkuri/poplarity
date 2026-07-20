@@ -1,0 +1,25 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">P</div>
+      <span>Presence</span>
+    </div>
+
+    <h1>Log in to your dashboard</h1>
+    <p class="subtitle">Enter the email and password you were given.</p>
+
+    <form (ngSubmit)="onLogin()">
+      <label>Email</label>
+      <input type="email" name="email" [(ngModel)]="email" required placeholder="you@example.com" />
+
+      <label>Password</label>
+      <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" />
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Logging in...' : 'Log In' }}
+      </button>
+    </form>
+  </div>
+</div>
