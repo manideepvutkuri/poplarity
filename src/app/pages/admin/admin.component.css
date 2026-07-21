@@ -55,7 +55,7 @@ h1 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin: 
   background: rgba(184,134,59,0.15); color: #B8863B; font-weight: 600;
 }
 .task-count { font-size: 13px; color: #5C5647; }
-.row-actions { text-align: right; }
+.row-actions { text-align: right; display: flex; gap: 6px; justify-content: flex-end; }
 
 .empty-row { padding: 30px; text-align: center; color: #8A8370; font-size: 13.5px; }
 

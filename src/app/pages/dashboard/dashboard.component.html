@@ -1,76 +1,167 @@
-<div class="page" *ngIf="!loading">
-  <div class="topbar">
-    <div class="brand"><div class="brand-mark">P</div><span>Presence</span></div>
-    <div class="user-info">
-      <span>{{ profile?.name }}</span>
-      <button class="logout-btn" (click)="logout()">Log out</button>
-    </div>
-  </div>
+<div class="app-shell" *ngIf="!loading">
 
-  <div class="content">
-    <div class="header-row">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">P</div>
+      <span>Presence</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active">Dashboard</a>
+      <a class="nav-item">Tasks</a>
+      <a class="nav-item">Calendar</a>
+      <a class="nav-item">Popularity</a>
+      <a class="nav-item">Social Media</a>
+      <a class="nav-item">Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="avatar">{{ profile?.name?.charAt(0) }}</div>
       <div>
-        <h1>Welcome back, {{ profile?.name?.split(' ')[0] }}</h1>
-        <p class="subtitle">{{ profile?.role_title }}</p>
+        <div class="footer-name">{{ profile?.name }}</div>
+        <button class="footer-logout" (click)="logout()">Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="welcome-label">Welcome back,</div>
+        <h1>{{ profile?.name }}</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="date-chip">{{ today }}</div>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- LEFT: Tasks -->
-      <div>
-        <div class="section-header">
-          <h2>Your Field Log</h2>
-          <div class="filters">
-            <button *ngFor="let f of ['all','today','upcoming','done']"
-                    [class.active]="filter === f"
-                    (click)="filter = f">
-              {{ f }}
-            </button>
-          </div>
-        </div>
+    <!-- STAT CARDS -->
+    <div class="stat-cards">
+      <div class="stat-card purple">
+        <div class="stat-label">Today's Tasks</div>
+        <div class="stat-value">{{ todayTasks.length }}</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Upcoming Tasks</div>
+        <div class="stat-value">{{ upcomingTasks.length }}</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Completed Tasks</div>
+        <div class="stat-value">{{ completedTasks.length }}</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Presence Score</div>
+        <div class="stat-value">{{ presenceScore?.score ?? '—' }}<span *ngIf="presenceScore">%</span></div>
+      </div>
+    </div>
 
-        <div class="task-list" *ngIf="filteredTasks.length; else noTasks">
-          <div class="task-row" *ngFor="let t of filteredTasks" [class.done]="t.status === 'done'">
-            <div class="task-info">
-              <div class="task-title">{{ t.title }}</div>
-              <div class="task-meta">{{ t.type }} <span *ngIf="t.location">· {{ t.location }}</span></div>
+    <div class="row-2col">
+      <!-- TODAY'S SCHEDULE -->
+      <div class="panel">
+        <div class="panel-header"><h2>Today's Schedule</h2></div>
+        <div class="schedule-list" *ngIf="todayTasks.length; else noSchedule">
+          <div class="schedule-row" *ngFor="let t of todayTasks">
+            <div class="schedule-time">{{ t.task_time || '—' }}</div>
+            <div class="schedule-info">
+              <div class="schedule-title">{{ t.title }}</div>
+              <div class="schedule-sub">{{ t.type }} <span *ngIf="t.location">· {{ t.location }}</span></div>
             </div>
-            <div class="task-date">
-              <div>{{ t.task_date }}</div>
-              <div class="task-time">{{ t.task_time }}</div>
-            </div>
-            <button *ngIf="t.status !== 'done'" class="done-btn" (click)="markDone(t.id)">Mark done</button>
-            <span *ngIf="t.status === 'done'" class="done-badge">✓ Done</span>
+            <button *ngIf="t.status !== 'done'" class="mini-btn" (click)="markDone(t.id)">Mark done</button>
+            <span *ngIf="t.status === 'done'" class="done-tag">Done</span>
           </div>
         </div>
-        <ng-template #noTasks>
-          <div class="empty-state">
-            No tasks yet. Your account manager will add your first tasks here soon.
-          </div>
+        <ng-template #noSchedule>
+          <div class="empty-state">Nothing scheduled for today.</div>
         </ng-template>
       </div>
 
-      <!-- RIGHT: Popularity -->
-      <div>
-        <h2>Your Social Pulse</h2>
-        <div class="social-cards">
-          <div class="social-card">
-            <div class="social-label">YouTube</div>
-            <div class="social-number">{{ latestYoutube?.followers || '—' }}</div>
-            <div class="social-sub" *ngIf="latestYoutube">{{ latestYoutube.views_15d }} views / 15d</div>
+      <!-- POPULARITY BY AREA -->
+      <div class="panel">
+        <div class="panel-header"><h2>Popularity by Area</h2></div>
+        <div class="donut-section" *ngIf="areaPopularity.length; else noArea">
+          <div class="donut-ring" [style.background]="areaGradient">
+            <div class="donut-center">
+              <div class="donut-value">{{ presenceScore?.score ?? '—' }}<span *ngIf="presenceScore">%</span></div>
+              <div class="donut-label">Overall</div>
+            </div>
           </div>
-          <div class="social-card">
-            <div class="social-label">Instagram</div>
-            <div class="social-number">{{ latestInstagram?.followers || '—' }}</div>
-            <div class="social-sub" *ngIf="latestInstagram">{{ latestInstagram.likes_15d }} likes / 15d</div>
+          <div class="legend">
+            <div class="legend-row" *ngFor="let a of areaPopularity; let i = index">
+              <span class="legend-dot" [style.background]="colorFor(i)"></span>
+              <span class="legend-name">{{ a.area_name }}</span>
+              <span class="legend-value">{{ a.score }}%</span>
+            </div>
           </div>
         </div>
-        <div class="empty-state" *ngIf="!latestYoutube && !latestInstagram">
-          Your social accounts haven't been connected yet. Numbers will appear here once synced.
+        <ng-template #noArea><div class="empty-state">No area data yet.</div></ng-template>
+      </div>
+
+      <!-- POPULARITY BY AGE GROUP -->
+      <div class="panel">
+        <div class="panel-header"><h2>Popularity by Age Group</h2></div>
+        <div class="donut-section" *ngIf="demographics.length; else noDemo">
+          <div class="donut-ring" [style.background]="demoGradient">
+            <div class="donut-center">
+              <div class="donut-value">{{ presenceScore?.score ?? '—' }}<span *ngIf="presenceScore">%</span></div>
+              <div class="donut-label">Overall</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-row" *ngFor="let d of demographics; let i = index">
+              <span class="legend-dot" [style.background]="colorFor(i)"></span>
+              <span class="legend-name">{{ d.label }}</span>
+              <span class="legend-value">{{ d.percentage }}%</span>
+            </div>
+          </div>
         </div>
+        <ng-template #noDemo><div class="empty-state">No audience data yet.</div></ng-template>
       </div>
     </div>
-  </div>
+
+    <!-- SOCIAL MEDIA OVERVIEW -->
+    <div class="panel wide">
+      <div class="panel-header"><h2>Social Media Overview</h2></div>
+      <div class="social-grid" *ngIf="platforms.length; else noSocial">
+        <div class="social-tile" *ngFor="let p of platforms">
+          <div class="social-tile-header">
+            <span class="platform-badge" [ngClass]="p.platform">{{ p.platform }}</span>
+          </div>
+          <div class="social-stats-row">
+            <div>
+              <div class="social-num-label">Followers</div>
+              <div class="social-num">{{ p.followers | number }}</div>
+            </div>
+            <div>
+              <div class="social-num-label">Views / 15d</div>
+              <div class="social-num">{{ p.views_15d | number }}</div>
+            </div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none" *ngIf="sparklinePoints(p.platform)">
+            <polyline [attr.points]="sparklinePoints(p.platform)" fill="none" stroke="#2E6B5E" stroke-width="2" />
+          </svg>
+        </div>
+      </div>
+      <ng-template #noSocial>
+        <div class="empty-state">Your social accounts haven't been connected yet.</div>
+      </ng-template>
+    </div>
+
+    <!-- UPCOMING TASKS LIST -->
+    <div class="panel wide">
+      <div class="panel-header"><h2>Upcoming Tasks</h2></div>
+      <div class="schedule-list" *ngIf="upcomingTasks.length; else noUpcoming">
+        <div class="schedule-row" *ngFor="let t of upcomingTasks">
+          <div class="schedule-time">{{ t.task_date }}</div>
+          <div class="schedule-info">
+            <div class="schedule-title">{{ t.title }}</div>
+            <div class="schedule-sub">{{ t.type }} <span *ngIf="t.location">· {{ t.location }}</span></div>
+          </div>
+          <button class="mini-btn" (click)="markDone(t.id)">Mark done</button>
+        </div>
+      </div>
+      <ng-template #noUpcoming><div class="empty-state">No upcoming tasks.</div></ng-template>
+    </div>
+  </main>
 </div>
 
 <div class="loading-screen" *ngIf="loading">Loading your dashboard...</div>

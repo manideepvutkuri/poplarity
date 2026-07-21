@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
+import { ManageClientComponent } from './manage-client/manage-client.component';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ManageClientComponent],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
 })
@@ -19,6 +20,7 @@ export class AdminComponent implements OnInit {
   showAddClientModal = false;
   showAddTaskModal = false;
   selectedClientForTask: any = null;
+  managingClient: any = null;
 
   newClient = { name: '', category: 'Politician', role_title: '', phone: '', email: '', password: '' };
   newTask = { title: '', type: 'Public Appearance', task_date: '', task_time: '', location: '' };
@@ -115,5 +117,14 @@ export class AdminComponent implements OnInit {
   async logout() {
     await this.supabase.signOut();
     this.router.navigate(['/login']);
+  }
+
+  openManageClient(client: any) {
+    this.managingClient = client;
+  }
+
+  async closeManageClient() {
+    this.managingClient = null;
+    await this.loadData();
   }
 }

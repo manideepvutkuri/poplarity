@@ -28,6 +28,7 @@
         </div>
         <div class="row-actions">
           <button class="secondary-btn" (click)="openAddTask(c)">+ Add Task</button>
+          <button class="secondary-btn" (click)="openManageClient(c)">Manage</button>
         </div>
       </div>
       <div class="empty-row" *ngIf="!clients.length">
@@ -121,3 +122,9 @@
     </div>
   </div>
 </div>
+
+<app-manage-client
+  *ngIf="managingClient"
+  [client]="managingClient"
+  (closed)="closeManageClient()">
+</app-manage-client>

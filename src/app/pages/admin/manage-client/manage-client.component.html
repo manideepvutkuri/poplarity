@@ -1,0 +1,98 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3>{{ client.name }}</h3>
+        <p class="sub">{{ client.role_title }}</p>
+      </div>
+      <button class="close-btn" (click)="close()">×</button>
+    </div>
+
+    <div class="tabs">
+      <button [class.active]="activeTab === 'tasks'" (click)="activeTab = 'tasks'">Tasks</button>
+      <button [class.active]="activeTab === 'demographics'" (click)="activeTab = 'demographics'">Age Groups</button>
+      <button [class.active]="activeTab === 'areas'" (click)="activeTab = 'areas'">Areas</button>
+      <button [class.active]="activeTab === 'social'" (click)="activeTab = 'social'">Social Stats</button>
+      <button [class.active]="activeTab === 'score'" (click)="activeTab = 'score'">Presence Score</button>
+    </div>
+
+    <div class="tab-body" *ngIf="!loading">
+
+      <!-- TASKS -->
+      <div *ngIf="activeTab === 'tasks'">
+        <div class="row" *ngFor="let t of tasks">
+          <div class="row-main">
+            <div class="row-title" [class.done]="t.status === 'done'">{{ t.title }}</div>
+            <div class="row-sub">{{ t.task_date }} · {{ t.type }}</div>
+          </div>
+          <button class="mini-btn" (click)="toggleTaskStatus(t)">
+            {{ t.status === 'done' ? 'Mark pending' : 'Mark done' }}
+          </button>
+          <button class="mini-btn danger" (click)="deleteTask(t.id)">Delete</button>
+        </div>
+        <div class="empty-state" *ngIf="!tasks.length">No tasks yet. Use "+ Add Task" from the client list.</div>
+      </div>
+
+      <!-- DEMOGRAPHICS -->
+      <div *ngIf="activeTab === 'demographics'">
+        <div class="row" *ngFor="let d of demographics">
+          <div class="row-main"><div class="row-title">{{ d.label }}</div></div>
+          <input type="number" class="inline-input" [(ngModel)]="d.percentage" (change)="updateDemographic(d)" min="0" max="100" />
+          <span class="pct-sign">%</span>
+          <button class="mini-btn danger" (click)="deleteDemographic(d.id)">Delete</button>
+        </div>
+        <div class="add-row">
+          <input placeholder="Label e.g. Youth" [(ngModel)]="newDemo.label" />
+          <input type="number" placeholder="%" [(ngModel)]="newDemo.percentage" min="0" max="100" />
+          <button class="primary-btn" (click)="addDemographic()">Add</button>
+        </div>
+      </div>
+
+      <!-- AREAS -->
+      <div *ngIf="activeTab === 'areas'">
+        <div class="row" *ngFor="let a of areas">
+          <div class="row-main"><div class="row-title">{{ a.area_name }}</div></div>
+          <input type="number" class="inline-input" [(ngModel)]="a.score" (change)="updateArea(a)" min="0" max="100" />
+          <button class="mini-btn danger" (click)="deleteArea(a.id)">Delete</button>
+        </div>
+        <div class="add-row">
+          <input placeholder="Area name e.g. Karimnagar Town" [(ngModel)]="newArea.area_name" />
+          <input type="number" placeholder="Score" [(ngModel)]="newArea.score" min="0" max="100" />
+          <button class="primary-btn" (click)="addArea()">Add</button>
+        </div>
+      </div>
+
+      <!-- SOCIAL -->
+      <div *ngIf="activeTab === 'social'">
+        <div class="row" *ngFor="let s of socialHistory">
+          <div class="row-main">
+            <div class="row-title">{{ s.platform }} — {{ s.followers | number }} followers</div>
+            <div class="row-sub">{{ s.views_15d | number }} views/15d · {{ s.likes_15d | number }} likes/15d · {{ s.snapshot_date }}</div>
+          </div>
+          <button class="mini-btn danger" (click)="deleteSocial(s.id)">Delete</button>
+        </div>
+        <div class="add-row wrap">
+          <select [(ngModel)]="newSocial.platform">
+            <option value="instagram">Instagram</option>
+            <option value="youtube">YouTube</option>
+            <option value="facebook">Facebook</option>
+          </select>
+          <input type="number" placeholder="Followers" [(ngModel)]="newSocial.followers" />
+          <input type="number" placeholder="Views/15d" [(ngModel)]="newSocial.views_15d" />
+          <input type="number" placeholder="Likes/15d" [(ngModel)]="newSocial.likes_15d" />
+          <button class="primary-btn" (click)="addSocial()">Add Snapshot</button>
+        </div>
+      </div>
+
+      <!-- PRESENCE SCORE -->
+      <div *ngIf="activeTab === 'score'">
+        <p class="sub">Current: {{ latestScore?.score ?? '—' }}</p>
+        <div class="add-row">
+          <input type="number" min="0" max="100" [(ngModel)]="newScore" />
+          <button class="primary-btn" (click)="saveScore()">Save New Score</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
